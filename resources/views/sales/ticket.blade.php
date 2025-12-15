@@ -38,7 +38,7 @@
 <body>
 
 <div class="ticket">
-    <h2>Panadería POS</h2>
+    <h2>Tienda POS</h2>
     <h4>Ticket de venta</h4>
 
     <p>
@@ -72,7 +72,7 @@
 @if(!$isPdf)
     <div class="center" style="margin-top:10px;">
         <a href="{{ route('ticket.pdf', $sale->id) }}" target="_blank">
-            Descargar PDF
+            Descargar ticket
         </a>
     </div>
 @endif

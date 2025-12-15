@@ -2,85 +2,47 @@
 
 @section('content')
 
-<h2>🛒 Ventas</h2>
-
-@if(session('ticket_id'))
-    <script>
-        window.open("{{ url('/ticket/' . session('ticket_id')) }}", "_blank");
-    </script>
-@endif
-
+<h2>📄 Historial de Ventas</h2>
 
 <div class="card">
-    <h3>Agregar producto</h3>
-
-    <form method="POST" action="/carrito/agregar" class="form-grid">
-        @csrf
-
-        <div>
-            <label>Producto</label>
-            <select name="product_id" required>
-                <option value="">Seleccione</option>
-                @foreach($products as $product)
-                    <option value="{{ $product->id }}">
-                        {{ $product->name }} (${{ number_format($product->price,2) }})
-                    </option>
-                @endforeach
-            </select>
-        </div>
-
-        <div>
-            <label>Cantidad</label>
-            <input type="number" name="quantity" min="1" required>
-        </div>
-
-        <button class="btn-primary">Agregar</button>
-    </form>
-</div>
-
-<div class="card">
-    <h3>Carrito</h3>
-
-    @if(empty($cart))
-        <p>No hay productos en el carrito.</p>
-    @else
-        <table class="table">
-            <thead>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Fecha</th>
+                <th>Usuario</th>
+                <th>Subtotal</th>
+                <th>IVA</th>
+                <th>Total</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($sales as $sale)
                 <tr>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th>Precio</th>
-                    <th>Subtotal</th>
-                    <th></th>
+                    <td>{{ $sale->id }}</td>
+                    <td>{{ $sale->created_at->format('d/m/Y H:i') }}</td>
+                    <td>{{ $sale->user->name ?? '—' }}</td>
+                    <td>${{ number_format($sale->subtotal, 2) }}</td>
+                    <td>${{ number_format($sale->iva, 2) }}</td>
+                    <td class="total">
+                        ${{ number_format($sale->total, 2) }}
+                    </td>
+                    <td>
+                        <a href="{{ route('ticket.show', $sale->id) }}" target="_blank" class="btn-link">
+                            Ver ticket
+                        </a>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @php $total = 0; @endphp
-                @foreach($cart as $id => $item)
-                    @php $subtotal = $item['price'] * $item['quantity']; $total += $subtotal; @endphp
-                    <tr>
-                        <td>{{ $item['name'] }}</td>
-                        <td>{{ $item['quantity'] }}</td>
-                        <td>${{ number_format($item['price'],2) }}</td>
-                        <td>${{ number_format($subtotal,2) }}</td>
-                        <td>
-                            <form method="POST" action="/carrito/eliminar/{{ $id }}">
-                                @csrf
-                                <button class="logout">X</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-
-        <h3>Total: ${{ number_format($total,2) }}</h3>
-
-        <form method="POST" action="/ventas/confirmar">
-            @csrf
-            <button class="btn-primary">Confirmar venta</button>
-        </form>
-    @endif
+            @empty
+                <tr>
+                    <td colspan="7" class="text-center">
+                        No hay ventas registradas
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
 </div>
 
 @endsection

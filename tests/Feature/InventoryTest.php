@@ -12,22 +12,26 @@ class InventoryTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function usuario_autenticado_puede_ver_el_inventario()
+    public function dueno_puede_ver_el_inventario()
     {
-        $user = User::factory()->create();
+        $owner = User::factory()->create([
+            'role' => 'owner'
+        ]);
 
-        $response = $this->actingAs($user)->get('/inventario');
+        $response = $this->actingAs($owner)->get('/inventario');
 
         $response->assertStatus(200);
         $response->assertSee('Inventario');
     }
 
     /** @test */
-    public function usuario_autenticado_puede_agregar_productos()
+    public function dueno_puede_agregar_productos()
     {
-        $user = User::factory()->create();
+        $owner = User::factory()->create([
+            'role' => 'owner'
+        ]);
 
-        $response = $this->actingAs($user)->post('/inventario', [
+        $response = $this->actingAs($owner)->post('/inventario', [
             'name' => 'Pan dulce',
             'stock' => 50,
             'price' => 10
@@ -48,5 +52,17 @@ class InventoryTest extends TestCase
         $response = $this->get('/inventario');
 
         $response->assertRedirect('/login');
+    }
+
+    /** @test */
+    public function usuario_normal_no_puede_ver_el_inventario()
+    {
+        $user = User::factory()->create([
+            'role' => 'user'
+        ]);
+
+        $response = $this->actingAs($user)->get('/inventario');
+
+        $response->assertStatus(403);
     }
 }

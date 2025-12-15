@@ -10,11 +10,12 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class SaleController extends Controller
 {
-    public function index()
+    public function create()
     {
         $products = Product::all();
         $cart = session()->get('cart', []);
-        return view('sales.index', compact('products', 'cart'));
+
+        return view('sales.create', compact('products', 'cart'));
     }
 
     public function addToCart(Request $request)
@@ -33,7 +34,7 @@ class SaleController extends Controller
         }
 
         session()->put('cart', $cart);
-        return redirect('/ventas');
+        return redirect()->route('ventas.create');
     }
 
     public function removeFromCart($id)
@@ -41,70 +42,75 @@ class SaleController extends Controller
         $cart = session()->get('cart', []);
         unset($cart[$id]);
         session()->put('cart', $cart);
-        return redirect('/ventas');
+
+        return redirect()->route('ventas.create');
     }
 
     public function checkout()
-{
-    $cart = session()->get('cart', []);
-    if (empty($cart)) {
-        return redirect('/ventas');
-    }
+    {
+        $cart = session()->get('cart', []);
+        if (empty($cart)) {
+            return redirect()->route('ventas.create');
+        }
 
-    $subtotal = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
-    $iva = $subtotal * 0.16;
-    $total = $subtotal + $iva;
+        $subtotal = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+        $iva = $subtotal * 0.16;
+        $total = $subtotal + $iva;
 
-    $sale = Sale::create([
-        'user_id' => auth()->id(),
-        'subtotal' => $subtotal,
-        'iva' => $iva,
-        'total' => $total
-    ]);
-
-    foreach ($cart as $productId => $item) {
-        SaleDetail::create([
-            'sale_id' => $sale->id,
-            'product_id' => $productId,
-            'quantity' => $item['quantity'],
-            'price' => $item['price']
+        $sale = Sale::create([
+            'user_id' => auth()->id(),
+            'subtotal' => $subtotal,
+            'iva' => $iva,
+            'total' => $total
         ]);
 
-        Product::where('id', $productId)
-            ->decrement('stock', $item['quantity']);
+        foreach ($cart as $productId => $item) {
+            SaleDetail::create([
+                'sale_id' => $sale->id,
+                'product_id' => $productId,
+                'quantity' => $item['quantity'],
+                'price' => $item['price']
+            ]);
+
+            Product::where('id', $productId)
+                ->decrement('stock', $item['quantity']);
+        }
+
+        session()->forget('cart');
+
+        return redirect()
+            ->route('ventas.create')
+            ->with('ticket_id', $sale->id);
     }
 
-    session()->forget('cart');
+    public function index()
+    {
+        $sales = Sale::with('user')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-    return redirect('/ventas')->with('ticket_id', $sale->id);
+        return view('sales.index', compact('sales'));
+    }
 
-}
     public function ticket($id)
-{
-    $sale = Sale::with('details.product')->findOrFail($id);
-     return view('sales.ticket', [
-        'sale' => $sale,
-        'isPdf' => false
-    ]);
+    {
+        $sale = Sale::with('details.product')->findOrFail($id);
+
+        return view('sales.ticket', [
+            'sale' => $sale,
+            'isPdf' => false
+        ]);
+    }
+
+    public function ticketPdf($id)
+    {
+        $sale = Sale::with('details.product')->findOrFail($id);
+
+        $pdf = Pdf::loadView('sales.ticket', [
+            'sale' => $sale,
+            'isPdf' => true
+        ]);
+
+        return $pdf->download('ticket_venta_' . $sale->id . '.pdf');
+    }
 }
-
-
-
-public function ticketPdf($id)
-{
-    $sale = Sale::with('details.product')->findOrFail($id);
-
-    $pdf = Pdf::loadView('sales.ticket', [
-    'sale' => $sale,
-    'isPdf' => true
-]);
-
-
-    return $pdf->download('ticket_venta_' . $sale->id . '.pdf');
-}
-
-
-
-}
-
-

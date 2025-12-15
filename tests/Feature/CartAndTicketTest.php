@@ -30,7 +30,7 @@ class CartAndTicketTest extends TestCase
             'quantity' => 2
         ]);
 
-        $response->assertRedirect('/ventas');
+        $response->assertRedirect(route('ventas.create'));
         $this->assertEquals(2, session('cart')[$product->id]['quantity']);
     }
 

@@ -57,4 +57,21 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    /**
+     * Update the user's password.
+     */
+    public function updatePassword(Request $request): RedirectResponse
+{
+    $request->validate([
+        'password' => ['required', 'confirmed', 'min:6'],
+    ]);
+
+    $request->user()->update([
+        'password' => Hash::make($request->password),
+        'must_change_password' => false,
+    ]);
+
+    return Redirect::route('ventas.create');
+}
 }
