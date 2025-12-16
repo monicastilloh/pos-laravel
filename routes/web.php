@@ -63,6 +63,16 @@ Route::middleware(['auth', 'owner'])->group(function () {
     Route::get('/inventario', [ProductController::class, 'index'])
         ->name('inventario');
 
+    Route::get('/inventario/{product}/editar', [ProductController::class, 'edit'])
+        ->name('inventario.edit');
+
+    Route::put('/inventario/{product}', [ProductController::class, 'update'])
+        ->name('inventario.update');
+
+    Route::delete('/inventario/{product}', [ProductController::class, 'destroy'])
+        ->name('inventario.destroy');
+        
+
     Route::post('/inventario', [ProductController::class, 'store']);
 
     /* Historial de ventas */
@@ -77,6 +87,13 @@ Route::middleware(['auth', 'owner'])->group(function () {
 
     Route::post('/usuarios', [UserController::class, 'store'])
         ->name('usuarios.store');
+    
+    Route::put('/usuarios/{user}', [UserController::class, 'update'])
+        ->name('usuarios.update');
+
+    Route::delete('/usuarios/{user}', [UserController::class, 'destroy'])
+        ->name('usuarios.destroy');
+    
 });
 
 

@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
+
 class UserController extends Controller
 {
     public function index()
@@ -39,4 +40,38 @@ class UserController extends Controller
             ->route('usuarios.index')
             ->with('success', 'Cajero creado correctamente');
     }
+
+
+
+    public function update(Request $request, User $user)
+{
+    $request->validate([
+        'name' => 'required|string',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'password' => 'nullable|min:8|confirmed',
+    ]);
+
+    $data = [
+        'name' => $request->name,
+        'email' => $request->email,
+    ];
+
+    if ($request->filled('password')) {
+        $data['password'] = Hash::make($request->password);
+    }
+
+    $user->update($data);
+
+    return redirect()->route('usuarios.index');
+}
+
+public function destroy(User $user)
+{
+    $user->delete();
+
+    return redirect()->route('usuarios.index');
+}
+
+
+
 }

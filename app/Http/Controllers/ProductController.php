@@ -25,5 +25,33 @@ class ProductController extends Controller
 
         return redirect()->back();
     }
+
+    public function edit(Product $product)
+{
+    return view('products.edit', compact('product'));
+}
+
+public function update(Request $request, Product $product)
+{
+    $request->validate([
+        'name' => 'required|string',
+        'price' => 'required|numeric|min:0',
+        'stock' => 'required|integer|min:0',
+    ]);
+
+    $product->update($request->only('name', 'price', 'stock'));
+
+    return redirect()->route('inventario')
+        ->with('success', 'Producto actualizado correctamente');
+}
+
+public function destroy(Product $product)
+{
+    $product->delete();
+
+    return redirect()->route('inventario')
+        ->with('success', 'Producto eliminado correctamente');
+
+}
 }
 

@@ -38,6 +38,7 @@
                 <th>Producto</th>
                 <th>Stock</th>
                 <th>Precio</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -46,9 +47,57 @@
                 <td>{{ $p->name }}</td>
                 <td>{{ $p->stock }}</td>
                 <td>${{ number_format($p->price, 2) }}</td>
+                <td>
+                    <button type="button" class="btn-secondary" onclick="toggleEdit({{ $p->id }})">Editar</button>
+                </td>
+                <td>
+                    <form method="POST" action="{{ route('inventario.delete', $p) }}" onsubmit="return confirm('¿Eliminar este producto?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-eliminar">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+
+            <tr id="edit-{{ $p->id }}" style="display:none;">
+                <td colspan="4">
+                    <form method="POST" action="{{ route('inventario.update', $p) }}" class="form-grid-inline">
+                        @csrf
+                        @method('PATCH')
+
+                        <div>
+                            <label>Nombre</label>
+                            <input type="text" name="name" value="{{ old('name', $p->name) }}" required>
+                        </div>
+
+                        <div>
+                            <label>Stock</label>
+                            <input type="number" name="stock" value="{{ old('stock', $p->stock) }}" required>
+                        </div>
+
+                        <div>
+                            <label>Precio</label>
+                            <input type="number" step="0.01" name="price" value="{{ old('price', $p->price) }}" required>
+                        </div>
+
+                        <div style="display:flex;gap:.5rem;align-items:center;">
+                            <button type="submit" class="btn-primary">Guardar</button>
+                            <button type="button" class="btn-secondary" onclick="toggleEdit({{ $p->id }})">Cancelar</button>
+                        </div>
+                    </form>
+                </td>
             </tr>
             @endforeach
+
+            <script>
+                function toggleEdit(id) {
+                    var r = document.getElementById('edit-' + id);
+                    if (!r) return;
+                    r.style.display = (r.style.display === 'table-row') ? 'none' : 'table-row';
+                }
+            </script>
         </tbody>
+       
     </table>
 </div>
 
