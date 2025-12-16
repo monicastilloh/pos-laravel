@@ -14,7 +14,8 @@
         @if(auth()->user()->role === 'owner')
             <a href="{{ route('dashboard.owner') }}">Dashboard</a>
             <a href="{{ route('inventario') }}">Inventario</a>
-            <a href="{{ route('ventas.index') }}">Ventas</a>
+            <a href="{{ route('ventas.index') }}">Historial de ventas</a>
+            <a href="{{ route('ventas.create') }}">Ventas</a>
             <a href="{{ route('usuarios.index') }}">Cajeros</a>
         @else
             <a href="{{ route('ventas.create') }}">Ventas</a>
