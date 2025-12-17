@@ -63,7 +63,7 @@
                 <td colspan="4">
                     <form method="POST" action="{{ route('inventario.update', $p) }}" class="form-grid-inline">
                         @csrf
-                        @method('PATCH')
+                        @method('PUT')
 
                         <div>
                             <label>Nombre</label>
