@@ -419,7 +419,7 @@ a {
     border-radius: 4px;
     cursor: pointer;
 }
-}
+
 .btn-eliminar:hover {
     background-color: #c82333;
 }
@@ -433,3 +433,70 @@ a {
     padding: 6px 10px;
     border-radius: 6px;
 }
+ .modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;
+    }
+    .modal-content {
+        background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 500px;
+        position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .modal-close {
+        position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 20px; font-weight: bold;
+    }
+    .ticket-frame {
+        width: 100%; height: 400px; border: none;
+    }
+    .card-venta {
+    background: #f9f9f9; 
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+
+.input {
+  border: none;
+  outline: none;
+  border-radius: 15px;
+  padding: 1em;
+  background-color: #ccc;
+  box-shadow: inset 2px 5px 10px rgba(0,0,0,0.3);
+  transition: 300ms ease-in-out;
+}
+
+.input:focus {
+  background-color: white;
+  transform: scale(1.05);
+  box-shadow: 13px 13px 100px #969696,
+             -13px -13px 100px #ffffff;
+}
+
+.btn-link {
+    margin: 0 10px;
+    font-size: 16px;
+    padding: 5px 10px;
+    cursor: pointer;
+    border: none;
+    background: rgb(30, 156, 160);
+    border-radius: 4px;
+    text-decoration: none;
+    color: #fff5f5;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); display: none; justify-content: center; 
+        align-items: center; z-index: 1000;
+    }
+    .modal-content {
+        background: white; padding: 20px; border-radius: 8px; width: 90%; 
+        max-width: 450px; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .modal-close {
+        position: absolute; top: 10px; right: 15px; cursor: pointer; 
+        font-size: 24px; font-weight: bold; color: #666;
+    }
+    .ticket-frame {
+        width: 100%; height: 500px; border: none; margin-top: 10px;
+    }

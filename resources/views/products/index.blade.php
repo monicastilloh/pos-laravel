@@ -14,7 +14,7 @@
             <label>Nombre</label>
             <input type="text" name="name" placeholder="Ej. Pan dulce" required>
         </div>
-                    <form method="POST" action="{{ route('inventario.destroy', $p) }}" onsubmit="return confirm('¿Eliminar este producto?');">
+
         <div>
             <label>Stock</label>
             <input type="number" name="stock" placeholder="Ej. 50" required>

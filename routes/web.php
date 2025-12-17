@@ -24,9 +24,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/ventas/crear', [SaleController::class, 'create'])
         ->name('ventas.create');
-
-    Route::post('/carrito/agregar', [SaleController::class, 'addToCart']);
-    Route::post('/carrito/eliminar/{id}', [SaleController::class, 'removeFromCart']);
     Route::post('/ventas/confirmar', [SaleController::class, 'checkout']);
 
     /* Ticket */

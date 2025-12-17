@@ -13,75 +13,35 @@ class SaleController extends Controller
     public function create()
     {
         $products = Product::all();
-        $cart = session()->get('cart', []);
-
-        return view('sales.create', compact('products', 'cart'));
+        return view('sales.create', compact('products'));
     }
 
-    public function addToCart(Request $request)
-    {
-        $product = Product::findOrFail($request->product_id);
-        $cart = session()->get('cart', []);
+    public function checkout(Request $request)
+{
+    $product = Product::findOrFail($request->product_id);
+    
+    $subtotal = $product->price * $request->quantity;
+    $iva = $subtotal * 0.16;
+    $total = $subtotal + $iva;
 
-        if (isset($cart[$product->id])) {
-            $cart[$product->id]['quantity'] += $request->quantity;
-        } else {
-            $cart[$product->id] = [
-                'name' => $product->name,
-                'price' => $product->price,
-                'quantity' => $request->quantity
-            ];
-        }
+    $sale = Sale::create([
+        'user_id' => auth()->id(),
+        'subtotal' => $subtotal,
+        'iva' => $iva,
+        'total' => $total
+    ]);
 
-        session()->put('cart', $cart);
-        return redirect()->route('ventas.create');
-    }
+    SaleDetail::create([
+        'sale_id' => $sale->id,
+        'product_id' => $product->id,
+        'quantity' => $request->quantity,
+        'price' => $product->price
+    ]);
 
-    public function removeFromCart($id)
-    {
-        $cart = session()->get('cart', []);
-        unset($cart[$id]);
-        session()->put('cart', $cart);
+    $product->decrement('stock', $request->quantity);
 
-        return redirect()->route('ventas.create');
-    }
-
-    public function checkout()
-    {
-        $cart = session()->get('cart', []);
-        if (empty($cart)) {
-            return redirect()->route('ventas.create');
-        }
-
-        $subtotal = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
-        $iva = $subtotal * 0.16;
-        $total = $subtotal + $iva;
-
-        $sale = Sale::create([
-            'user_id' => auth()->id(),
-            'subtotal' => $subtotal,
-            'iva' => $iva,
-            'total' => $total
-        ]);
-
-        foreach ($cart as $productId => $item) {
-            SaleDetail::create([
-                'sale_id' => $sale->id,
-                'product_id' => $productId,
-                'quantity' => $item['quantity'],
-                'price' => $item['price']
-            ]);
-
-            Product::where('id', $productId)
-                ->decrement('stock', $item['quantity']);
-        }
-
-        session()->forget('cart');
-
-        return redirect()
-            ->route('ventas.create')
-            ->with('ticket_id', $sale->id);
-    }
+    return redirect()->route('ventas.create')->with('ticket_id', $sale->id);
+}
 
     public function index()
     {
