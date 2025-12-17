@@ -51,7 +51,7 @@
                     <button type="button" class="btn-secondary" onclick="toggleEdit({{ $p->id }})">Editar</button>
                 </td>
                 <td>
-                    <form method="POST" action="{{ route('inventario.delete', $p) }}" onsubmit="return confirm('¿Eliminar este producto?');">
+                    <form method="POST" action="{{ route('inventario.destroy', $p) }}" onsubmit="return confirm('¿Eliminar este producto?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn-eliminar">Eliminar</button>
